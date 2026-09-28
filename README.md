@@ -179,6 +179,32 @@ python3 aisbench_test.py --dataset "/mnt/path_to_dataset/medium2.jsonl" --output
 python3 aisbench_test.py --dataset "/mnt/path_to_dataset/precision_dataset.jsonl" --output_len 1024 --concurrency 64 --request_rate 4 --test_accuracy
 `
 
+### GLM-5.2 GSM8K 答案提取适配
+
+GLM-5.2 的回复可能在思考过程里包含 `Question:`，并在 `</think>` 后给出带千位分隔符或 Markdown 加粗的最终答案。AISBench 默认提取器可能因此提前截断回复，或将答案后的单位数字误识别为答案。
+
+本分支提供补丁 `patches/glm52_gsm8k_extractor.patch`。先确认 AISBench 的安装目录，再应用补丁：
+
+```
+site_packages="$(python3 -c 'import site; print(site.getsitepackages()[0])')"
+cp "$site_packages/ais_bench/benchmark/datasets/gsm8k.py" \
+   "$site_packages/ais_bench/benchmark/datasets/gsm8k.py.bak"
+patch -d "$site_packages" -p1 < patches/glm52_gsm8k_extractor.patch
+```
+
+补丁将：
+
+1. 优先提取 `</think>` 后的最终回答，不再按思考内容中的 `Question:` 截断；
+2. 支持带千位分隔符的数字，并在比较前移除逗号；
+3. 优先识别答案句中加粗的数字，避免把随后出现的时间、数量或单位数字误当成答案。
+
+恢复原始提取器：
+
+```
+mv "$site_packages/ais_bench/benchmark/datasets/gsm8k.py.bak" \
+   "$site_packages/ais_bench/benchmark/datasets/gsm8k.py"
+```
+
 ## 四、结果获取
 
 1、性能结果获取（暂未支持精度结果获取，需在日志中查看）：
