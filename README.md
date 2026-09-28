@@ -183,6 +183,12 @@ python3 aisbench_test.py --dataset "/mnt/path_to_dataset/precision_dataset.jsonl
 
 GLM-5.2 的回复可能在思考过程里包含 `Question:`，并在 `</think>` 后给出带千位分隔符或 Markdown 加粗的最终答案。AISBench 默认提取器可能因此提前截断回复，或将答案后的单位数字误识别为答案。
 
+使用说明：
+
+- 当前 `80.5.9.129` 的 `wd_test0921` 容器已经应用该补丁，可直接使用 `vaws_wd/glm5_2/aisbench_auto_tools_prefix/aisbench_test.py` 运行精度测试。
+- 其他容器或新环境必须先按下方步骤应用补丁，再运行 `aisbench_test.py`。
+- 工具箱不会自动安装补丁；运行前必须确认 AISBench 安装目录中的 GSM8K 提取器已经完成适配。
+
 本分支提供补丁 `patches/glm52_gsm8k_extractor.patch`。先确认 AISBench 的安装目录，再应用补丁：
 
 ```
