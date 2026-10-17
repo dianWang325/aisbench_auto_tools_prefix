@@ -2,7 +2,7 @@ diff --git a/ais_bench/benchmark/datasets/gsm8k.py b/ais_bench/benchmark/dataset
 --- a/ais_bench/benchmark/datasets/gsm8k.py
 +++ b/ais_bench/benchmark/datasets/gsm8k.py
 @@ -46,11 +46,54 @@ def gsm8k_dataset_postprocess(text: str) -> str:
- 
+
  @TEXT_POSTPROCESSORS.register_module('gsm8k')
  def gsm8k_postprocess(text: str) -> str:
 -    text = text.split('Question:')[0]
@@ -56,6 +56,6 @@ diff --git a/ais_bench/benchmark/datasets/gsm8k.py b/ais_bench/benchmark/dataset
 +            answer = normalize(last_bold.group(1))
 +
 +    return answer
- 
- 
+
+
  class Gsm8kEvaluator(BaseEvaluator):
