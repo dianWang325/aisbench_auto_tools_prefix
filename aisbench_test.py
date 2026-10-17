@@ -21,6 +21,12 @@ def parse_arguments():
     parser.add_argument("--concurrency", type=str, default="2048", help="max concurrency")
     parser.add_argument("--request_rate", type=str, default="0", help="request rate")
     parser.add_argument("--test_type", type=str, default="stream", help="text or stream")
+    parser.add_argument(
+        "--api_mode",
+        choices=("chat", "completion"),
+        default="chat",
+        help="chat applies the model chat template; completion sends the raw prompt",
+    )
     parser.add_argument("--dataset", type=str, default="none", help="dataset path")
     parser.add_argument("--repeat", type=int, default=1, help="number of test repeat times")
     parser.add_argument("--enable_think", action='store_true', default=False, help="enable thinking for ds v3.1")
@@ -112,7 +118,8 @@ def save_result(request_rate, npu_num, repeat_rate):
 def modify_aisbench_api(concurrency, output_len, request_rate_param=None):
     if request_rate_param is None:
         request_rate_param = request_rate
-    file_default = open("default_api.py", 'r+')
+    api_template = "default_completion_api.py" if api_mode == "completion" else "default_api.py"
+    file_default = open(api_template, 'r+')
     file_temp = open("temp_api.py", 'w+')
     logging.info("Api config file:")
     for ss in file_default.readlines():
@@ -309,6 +316,7 @@ if __name__ == '__main__':
     concurrency = args.concurrency
     request_rate = args.request_rate
     test_type = args.test_type
+    api_mode = args.api_mode
     dataset_path_input = args.dataset
     test_times = args.repeat
     enable_think = args.enable_think
@@ -358,6 +366,7 @@ if __name__ == '__main__':
     logging.info(f"concurrency: {concurrency}")
     logging.info(f"request rate: {request_rate}")
     logging.info(f"test type: {test_type}")
+    logging.info(f"api mode: {api_mode}")
     logging.info(f"test_times: {test_times}")
     logging.info(f"v3.1 enable_think: {enable_think}")
     logging.info(f"accuracy test: {test_accuracy}")
@@ -374,15 +383,23 @@ if __name__ == '__main__':
     logging.info(f"length_max: {length_max}")
 
     # 区分流式和非流式
-    if test_type == "text":
+    if api_mode == "completion" and enable_think:
+        raise ValueError("--enable_think requires --api_mode chat")
+
+    if api_mode == "completion" and test_type == "text":
+        api_test_type = "VLLMCustomAPI"
+        api_test_abbr = "vllm-api-general"
+    elif api_mode == "completion" and test_type == "stream":
+        api_test_type = "VLLMCustomAPIStream"
+        api_test_abbr = "vllm-api-stream"
+    elif api_mode == "chat" and test_type == "text":
         api_test_type = "VLLMCustomAPIChat"
         api_test_abbr = "vllm-api-general-chat"
-    elif test_type == "stream":
+    elif api_mode == "chat" and test_type == "stream":
         api_test_type = "VLLMCustomAPIChatStream"
         api_test_abbr = "vllm-api-stream-chat"
     else:
-        api_test_type = "VLLMCustomAPIChatStream"
-        api_test_abbr = "vllm-api-stream-chat"
+        raise ValueError(f"unsupported api_mode/test_type combination: {api_mode}/{test_type}")
 
     if dataset_path_input == "none":
         src_file_prefix,src_file_data = create_gsm8k_dataset(dataset_type, input_len, data_num, MODEL_PATH, DATASET_PATH, prefix_num, repeat_rate, seed,

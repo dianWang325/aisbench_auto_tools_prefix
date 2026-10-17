@@ -70,6 +70,7 @@ POD_INFO = []
 | --concurrency | int |系统最大并发数 |
 | --request_rate | float |请求频率，默认0  |
 | --test_type | str |text or stream，测试流式or非流式，默认流式即stream |
+| --api_mode | str |chat or completion；默认chat保留聊天模板，completion发送原始prompt且不添加special token |
 | --dataset | str | 数据集路径，可指定测试数据集，仅限gsm8k格式 |
 | --repeat | int | 单条命令的测试次数，默认值1，注：数据采集功能只能采集最后一次测试数据 |
 | --enable_think | bool | DeepSeek V3.1模型开启think功能，默认值false |
