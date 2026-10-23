@@ -1,21 +1,21 @@
 # 数据集文件夹路径，需可访问(请使用绝对路径)
-DATASET_PATH = "/home/dataset"
+DATASET_PATH = '/mnt/share/w00985415/logs/dsv4flash_139_git_20261023_115834/datasets'
 
 # aisbench 工作路径, 为 git clone aisbench 后得到的 benchmark 目录的绝对路径
 # 可通过命令 `pip show ais-bench-benchmark` 查询location
-WORK_PATH = "/home/benchmark"
+WORK_PATH = '/usr/local/python3.11.10/lib/python3.11/site-packages'
 
 # 服务化配置的模型名称
-MODEL_NAME = "ds"
+MODEL_NAME = 'dsv4'
 # 模型权重路径, 用于读取 tokenizer
-MODEL_PATH = "/home/weights/model_weights"
+MODEL_PATH = '/mnt/weight/DeepSeek-V4-Flash-w4a8'
 # 请求目的 IP
-HOST_IP = "141.xx.xx.xx"
+HOST_IP = '127.0.0.1'
 # 请求目的端口
-HOST_PORT = "8004"
+HOST_PORT = '18080'
 
 # 模型baseUrl, 配置后会忽略HOST_IP、HOST_PORT配置
-URL=""
+URL = 'http://127.0.0.1:18080/'
 
 ## 鉴权信息
 API_KEY = ""
@@ -24,10 +24,10 @@ API_KEY = ""
 DEFAULT_PERFORMANCE_TEST = "default_perf"
 
 # aisbench输出日志保存路径
-OUTPUT_DIR = "./outputs/default"
+OUTPUT_DIR = '/mnt/share/w00985415/logs/dsv4flash_139_git_20261023_115834/outputs'
 
 # 各节点信息，格式为 ["{ip}:{port}"]
 # 用于查询vllm metrics计算各个dp域的prefix cache命中率，不配置默认为HOST_IP:HOST_PORT
 # PD分离场景请填写各个P节点的IP和对应dp域的port
 # POD_INFO = ["141.xx.xx.11:8000","141.xx.xx.12:8000"]
-POD_INFO = []
+POD_INFO = ['127.0.0.1:18080']
